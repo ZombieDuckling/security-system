@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Security System PoC</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header>
+    <h1>Security System Proof of Concept</h1>
+    <p>Gesture &amp; weapon detection — alerts shown below (simulated; no WhatsApp/SMS)</p>
+  </header>
+
+  <main>
+    <section class="status-section">
+      <h2>System Status</h2>
+      <div class="status-panel">
+        <div class="status-item">
+          <span class="status-label">Mode:</span>
+          <div class="mode-selector">
+            <button type="button" class="mode-btn mode-armed active" data-mode="armed">Armed</button>
+            <button type="button" class="mode-btn mode-home" data-mode="home">Home</button>
+            <button type="button" class="mode-btn mode-disarmed" data-mode="disarmed">Disarmed</button>
+            <button type="button" class="mode-btn mode-test" data-mode="test">Test</button>
+          </div>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Connection:</span>
+          <span id="connectionStatus" class="status-connected">Connecting...</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Face:</span>
+          <span id="faceStatusDisplay">—</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Safe Word:</span>
+          <label class="toggle-inline">
+            <input type="checkbox" id="safeWordToggle" />
+            <span id="safeWordStatus">Off</span>
+          </label>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Voice Cmd:</span>
+          <label class="toggle-inline">
+            <input type="checkbox" id="voiceCmdToggle" />
+            <span id="voiceCmdStatus">Off</span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <section class="video-section">
+      <h2>Live feed</h2>
+      <div class="video-wrap">
+        <img id="videoFeed" src="/video" alt="Live camera feed" />
+        <p id="videoError" class="video-error" style="display:none;">Stream unavailable. Check that the server is running and camera is in use.</p>
+      </div>
+    </section>
+
+    <section class="detection-section">
+      <h2>Detection Features</h2>
+      <div class="detection-toggles">
+        <label class="toggle-item">
+          <input type="checkbox" id="gestureToggle" checked />
+          <span>Gesture Detection (Hands Up)</span>
+        </label>
+        <label class="toggle-item">
+          <input type="checkbox" id="weaponToggle" checked />
+          <span>Weapon Detection</span>
+        </label>
+        <label class="toggle-item">
+          <input type="checkbox" id="motionToggle" checked />
+          <span>Motion Detection</span>
+        </label>
+        <label class="toggle-item">
+          <input type="checkbox" id="faceToggle" checked />
+          <span>Face Recognition</span>
+        </label>
+      </div>
+    </section>
+
+    <section class="safe-face-section">
+      <h2>Safe face</h2>
+      <p id="safeFaceStatus" class="safe-face-status">—</p>
+      <p id="currentFaceStatus" class="current-face-status">Current: —</p>
+      <p id="captureMessage" class="capture-message" style="display:none;"></p>
+      <div class="safe-face-actions">
+        <button type="button" id="setSafeFaceBtn">Set safe face</button>
+        <button type="button" id="clearSafeFaceBtn">Clear safe face</button>
+      </div>
+    </section>
+
+    <section class="alerts-section">
+      <h2>Alert log</h2>
+      <div id="alertList" class="alert-list"></div>
+    </section>
+
+    <section class="pricing-section">
+      <h2>Pricing breakdown (ZAR)</h2>
+      <p class="pricing-note">Full development and hardware estimate for the security system.</p>
+
+      <h3>Development costs</h3>
+      <table class="pricing-table">
+        <thead>
+          <tr>
+            <th>Phase</th>
+            <th>Description</th>
+            <th>Estimated range (ZAR)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Discovery &amp; requirements</td><td>Workshops, use cases, architecture</td><td>R15,000 – R30,000</td></tr>
+          <tr><td>PoC (this deliverable)</td><td>Gesture + weapon detection, web UI</td><td>R25,000 – R50,000</td></tr>
+          <tr><td>Full app development</td><td>Mobile app, backend, integrations</td><td>R80,000 – R150,000</td></tr>
+          <tr><td>WhatsApp/SMS integration</td><td>Twilio/WhatsApp Business API setup</td><td>R10,000 – R25,000</td></tr>
+          <tr><td>Testing &amp; QA</td><td>UAT, security testing</td><td>R20,000 – R40,000</td></tr>
+          <tr><td>Deployment &amp; support</td><td>Setup, documentation, 3–6 months support</td><td>R15,000 – R35,000</td></tr>
+          <tr class="total"><td colspan="2"><strong>Total development</strong></td><td><strong>R165,000 – R330,000</strong></td></tr>
+        </tbody>
+      </table>
+
+      <h3>Hardware (per client home)</h3>
+      <table class="pricing-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Description</th>
+            <th>Estimated range (ZAR)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Edge AI device</td><td>Jetson Nano 4GB or Raspberry Pi 4 + Coral USB</td><td>R4,000 – R6,000</td></tr>
+          <tr><td>Indoor camera(s)</td><td>2–4× IP cameras (Hikvision/Dahua equivalent)</td><td>R1,500 – R6,000</td></tr>
+          <tr><td>NVR/Storage</td><td>1TB NVR or NAS for recordings</td><td>R2,000 – R5,000</td></tr>
+          <tr><td>Cabling &amp; accessories</td><td>Ethernet, power, mounts</td><td>R1,000 – R2,500</td></tr>
+          <tr><td>Installation labour</td><td>Professional install (25–35% of hardware)</td><td>R2,500 – R5,000</td></tr>
+          <tr class="total"><td colspan="2"><strong>Total hardware per home</strong></td><td><strong>R13,000 – R24,500</strong></td></tr>
+        </tbody>
+      </table>
+
+      <h3>Grand total (development + first client)</h3>
+      <ul class="grand-total">
+        <li><strong>Low:</strong> ~R178,000</li>
+        <li><strong>High:</strong> ~R354,500</li>
+      </ul>
+      <p class="pricing-note">Pricing assumes small team / freelancer rates. Enterprise or agency pricing would be higher.</p>
+    </section>
+  </main>
+
+  <script>
+    const alertList = document.getElementById('alertList');
+    const videoFeed = document.getElementById('videoFeed');
+
+    const videoError = document.getElementById('videoError');
+    videoFeed.onerror = function () {
+      this.style.display = 'none';
+      videoError.style.display = 'block';
+    };
+    videoFeed.onload = function () {
+      videoError.style.display = 'none';
+      this.style.display = 'block';
+    };
+
+    // System status elements
+    const connectionStatus = document.getElementById('connectionStatus');
+    const faceStatusDisplay = document.getElementById('faceStatusDisplay');
+    const safeWordToggle = document.getElementById('safeWordToggle');
+    const safeWordStatus = document.getElementById('safeWordStatus');
+    const voiceCmdToggle = document.getElementById('voiceCmdToggle');
+    const voiceCmdStatus = document.getElementById('voiceCmdStatus');
+
+    // Mode selector buttons
+    const modeButtons = document.querySelectorAll('.mode-btn');
+
+    // Detection feature toggles
+    const gestureToggle = document.getElementById('gestureToggle');
+    const weaponToggle = document.getElementById('weaponToggle');
+    const motionToggle = document.getElementById('motionToggle');
+    const faceToggle = document.getElementById('faceToggle');
+
+    // Mode button handlers
+    modeButtons.forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const mode = btn.dataset.mode;
+        try {
+          await fetch('/api/mode', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mode })
+          });
+          fetchStatus();
+        } catch (e) {
+          console.error('Failed to set mode:', e);
+        }
+      });
+    });
+
+    // Safe word toggle handler
+    safeWordToggle.addEventListener('change', async () => {
+      try {
+        await fetch('/api/safe-word', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled: safeWordToggle.checked })
+        });
+      } catch (e) {
+        console.error('Failed to toggle safe word:', e);
+      }
+    });
+
+    // Voice command toggle handler
+    voiceCmdToggle.addEventListener('change', async () => {
+      try {
+        await fetch('/api/voice-commands', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled: voiceCmdToggle.checked })
+        });
+      } catch (e) {
+        console.error('Failed to toggle voice commands:', e);
+      }
+    });
+
+    // Fetch and update system status
+    async function fetchStatus() {
+      try {
+        const r = await fetch('/api/status');
+        const d = await r.json();
+        
+        // Update connection status
+        if (d.connected) {
+          connectionStatus.textContent = 'Connected';
+          connectionStatus.className = 'status-connected';
+        } else {
+          connectionStatus.textContent = 'Disconnected';
+          connectionStatus.className = 'status-disconnected';
+        }
+
+        // Update mode buttons
+        const currentMode = d.mode || 'armed';
+        modeButtons.forEach(btn => {
+          if (btn.dataset.mode === currentMode) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+        
+        // Update face status
+        if (d.face_status === 'safe') {
+          faceStatusDisplay.textContent = 'Safe';
+          faceStatusDisplay.className = 'face-safe';
+        } else if (d.face_status === 'unknown') {
+          faceStatusDisplay.textContent = 'Unknown';
+          faceStatusDisplay.className = 'face-unknown';
+        } else {
+          faceStatusDisplay.textContent = 'None';
+          faceStatusDisplay.className = 'face-none';
+        }
+        
+        // Update safe word and voice command status
+        if (d.safe_word_enabled) {
+          safeWordStatus.textContent = 'On';
+          safeWordToggle.checked = true;
+        } else {
+          safeWordStatus.textContent = 'Off';
+          safeWordToggle.checked = false;
+        }
+        
+        if (d.voice_commands_enabled) {
+          voiceCmdStatus.textContent = 'On';
+          voiceCmdToggle.checked = true;
+        } else {
+          voiceCmdStatus.textContent = 'Off';
+          voiceCmdToggle.checked = false;
+        }
+      } catch (_) {
+        connectionStatus.textContent = 'Error';
+        connectionStatus.className = 'status-disconnected';
+      }
+    }
+      const currentlyArmed = armBtn.textContent === 'Armed';
+      try {
+        await fetch('/api/arm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ armed: !currentlyArmed })
+        });
+        fetchStatus();
+      } catch (e) {
+        console.error('Failed to toggle arm state:', e);
+      }
+    });
+
+    // Detection feature toggle handlers
+    async function updateDetectionFeatures() {
+      const features = {
+        gesture_detection: gestureToggle.checked,
+        weapon_detection: weaponToggle.checked,
+        motion_detection: motionToggle.checked,
+        face_recognition: faceToggle.checked
+      };
+      try {
+        await fetch('/api/detection/features', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ features })
+        });
+      } catch (e) {
+        console.error('Failed to update detection features:', e);
+      }
+    }
+
+    gestureToggle.addEventListener('change', updateDetectionFeatures);
+    weaponToggle.addEventListener('change', updateDetectionFeatures);
+    motionToggle.addEventListener('change', updateDetectionFeatures);
+    faceToggle.addEventListener('change', updateDetectionFeatures);
+
+    // Fetch initial feature states
+    async function fetchDetectionFeatures() {
+      try {
+        const r = await fetch('/api/detection/features');
+        const d = await r.json();
+        if (d.features) {
+          gestureToggle.checked = d.features.gesture_detection !== false;
+          weaponToggle.checked = d.features.weapon_detection !== false;
+          motionToggle.checked = d.features.motion_detection !== false;
+          faceToggle.checked = d.features.face_recognition !== false;
+        }
+      } catch (_) {}
+    }
+
+    function renderAlerts(alerts) {
+      if (!alerts || alerts.length === 0) {
+        alertList.innerHTML = '<p class="no-alerts">No alerts yet.</p>';
+        return;
+      }
+      alertList.innerHTML = alerts.map(a =>
+        `<div class="alert-item alert-${a.alert_type}">
+          <span class="alert-time">${a.timestamp}</span>
+          <span class="alert-type">${a.alert_type}</span>
+          <span class="alert-conf">${(a.confidence * 100).toFixed(0)}%</span>
+        </div>`
+      ).join('');
+    }
+
+    async function fetchAlerts() {
+      try {
+        const r = await fetch('/api/alerts?limit=50');
+        const data = await r.json();
+        renderAlerts(data);
+      } catch (_) {
+        renderAlerts([]);
+      }
+    }
+
+    setInterval(fetchAlerts, 2000);
+    fetchAlerts();
+
+    const safeFaceStatus = document.getElementById('safeFaceStatus');
+    const currentFaceStatus = document.getElementById('currentFaceStatus');
+    const setSafeFaceBtn = document.getElementById('setSafeFaceBtn');
+    const clearSafeFaceBtn = document.getElementById('clearSafeFaceBtn');
+
+    function faceStatusLabel(s) {
+      if (s === 'safe') return 'Safe face detected';
+      if (s === 'unknown') return 'Unknown face';
+      return 'No face';
+    }
+
+    async function fetchSafeFaceStatus() {
+      try {
+        const r = await fetch('/api/safe-face/status');
+        const d = await r.json();
+        if (!d.available) {
+          safeFaceStatus.textContent = 'Face recognition unavailable (install face_recognition).';
+          currentFaceStatus.textContent = 'Current: —';
+          setSafeFaceBtn.disabled = true;
+          clearSafeFaceBtn.disabled = true;
+          faceToggle.disabled = true;
+          faceToggle.checked = false;
+          return;
+        }
+        safeFaceStatus.textContent = d.safe_face_set ? 'Safe face is set.' : 'No safe face set.';
+        currentFaceStatus.textContent = 'Current: ' + faceStatusLabel(d.face_status || 'none');
+        const captureMsg = document.getElementById('captureMessage');
+        if (d.capture_message) {
+          captureMsg.textContent = d.capture_message;
+          captureMsg.style.display = 'block';
+          if (d.capture_message === 'Saved!') captureMsg.classList.add('capture-success');
+          else captureMsg.classList.remove('capture-success');
+        } else {
+          captureMsg.style.display = 'none';
+        }
+        setSafeFaceBtn.disabled = false;
+        clearSafeFaceBtn.disabled = !d.safe_face_set;
+        faceToggle.disabled = false;
+      } catch (_) {
+        safeFaceStatus.textContent = '—';
+        currentFaceStatus.textContent = 'Current: —';
+      }
+    }
+
+    setSafeFaceBtn.addEventListener('click', async () => {
+      setSafeFaceBtn.disabled = true;
+      try {
+        const r = await fetch('/api/safe-face/capture', { method: 'POST' });
+        const d = await r.json();
+        if (d.ok) alert(d.message || 'Look at the camera.');
+      } catch (e) {
+        alert('Failed to request capture.');
+      }
+      setSafeFaceBtn.disabled = false;
+      fetchSafeFaceStatus();
+    });
+
+    clearSafeFaceBtn.addEventListener('click', async () => {
+      clearSafeFaceBtn.disabled = true;
+      try {
+        await fetch('/api/safe-face/clear', { method: 'POST' });
+      } catch (_) {}
+      fetchSafeFaceStatus();
+      clearSafeFaceBtn.disabled = false;
+    });
+
+    // Initial fetches
+    setInterval(fetchStatus, 3000);
+    fetchStatus();
+    fetchDetectionFeatures();
+    setInterval(fetchSafeFaceStatus, 2000);
+    fetchSafeFaceStatus();
+  </script>
+</body>
+</html>
