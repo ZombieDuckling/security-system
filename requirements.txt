@@ -1,0 +1,7 @@
+fastapi[standard]
+uvicorn
+opencv-python-headless
+mediapipe
+ultralytics
+huggingface-hub
+face_recognition

@@ -1,0 +1,415 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  margin: 0;
+  padding: 1rem;
+  background: #1a1a1a;
+  color: #e0e0e0;
+  line-height: 1.5;
+}
+
+header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #333;
+}
+
+header h1 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+header p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #999;
+}
+
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+section {
+  margin-bottom: 2rem;
+}
+
+h2 {
+  font-size: 1.15rem;
+  margin: 0 0 0.75rem 0;
+  color: #ccc;
+}
+
+h3 {
+  font-size: 1rem;
+  margin: 1.25rem 0 0.5rem 0;
+  color: #aaa;
+}
+
+.video-section .video-wrap {
+  position: relative;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  max-width: 640px;
+}
+
+.video-section img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.video-section .video-error {
+  display: none;
+  margin: 0;
+  padding: 1rem;
+  color: #888;
+  font-size: 0.9rem;
+  text-align: center;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.safe-face-section {
+  background: #252525;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.safe-face-status,
+.current-face-status {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+.current-face-status {
+  color: #aaa;
+}
+
+.capture-message {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.9rem;
+  color: #ffb400;
+}
+
+.capture-message.capture-success {
+  color: #4ade80;
+}
+
+.safe-face-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.safe-face-actions button {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #333;
+  color: #e0e0e0;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.safe-face-actions button:hover:not(:disabled) {
+  background: #404040;
+}
+
+.safe-face-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.alerts-section .alert-list {
+  max-height: 200px;
+  overflow-y: auto;
+  background: #252525;
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+.no-alerts {
+  margin: 0;
+  padding: 0.5rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.alert-item {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.4rem 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.alert-item:last-child {
+  margin-bottom: 0;
+}
+
+.alert-gesture {
+  background: rgba(255, 180, 0, 0.15);
+  border-left: 3px solid #ffb400;
+}
+
+.alert-weapon {
+  background: rgba(255, 80, 80, 0.15);
+  border-left: 3px solid #ff5050;
+}
+
+.alert-motion {
+  background: rgba(255, 165, 0, 0.15);
+  border-left: 3px solid #ffa500;
+}
+
+.alert-safe_word {
+  background: rgba(147, 51, 234, 0.15);
+  border-left: 3px solid #9333ea;
+}
+
+.alert-time {
+  color: #888;
+  flex: 0 0 160px;
+}
+
+.alert-type {
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+.alert-conf {
+  color: #aaa;
+  margin-left: auto;
+}
+
+.pricing-note {
+  font-size: 0.85rem;
+  color: #888;
+  margin: 0 0 0.75rem 0;
+}
+
+.pricing-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  background: #252525;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.pricing-table th,
+.pricing-table td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+
+.pricing-table th {
+  background: #2a2a2a;
+  color: #bbb;
+  font-weight: 600;
+}
+
+.pricing-table tr.total td {
+  border-bottom: none;
+  font-weight: 600;
+  background: #2a2a2a;
+}
+
+.pricing-table td:last-child {
+  white-space: nowrap;
+  color: #b0b0b0;
+}
+
+.grand-total {
+  margin: 0.5rem 0 0 0;
+  padding-left: 1.25rem;
+  color: #b0b0b0;
+}
+
+.grand-total li {
+  margin-bottom: 0.25rem;
+}
+
+/* Status Section */
+.status-section {
+  background: #252525;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.status-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-label {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.arm-btn {
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.arm-btn.armed {
+  background: #dc2626;
+  color: #fff;
+}
+
+.arm-btn.armed:hover {
+  background: #ef4444;
+}
+
+.arm-btn.disarmed {
+  background: #16a34a;
+  color: #fff;
+}
+
+.arm-btn.disarmed:hover {
+  background: #22c55e;
+}
+
+.status-connected {
+  color: #4ade80;
+}
+
+.status-disconnected {
+  color: #ef4444;
+}
+
+.face-safe {
+  color: #4ade80;
+  font-weight: 600;
+}
+
+.face-unknown {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.face-none {
+  color: #888;
+}
+
+/* Detection Section */
+.detection-section {
+  background: #252525;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.detection-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.toggle-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.toggle-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #4f46e5;
+}
+
+/* Mode Selector */
+.mode-selector {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.mode-btn {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #444;
+  background: #333;
+  color: #aaa;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.mode-btn:first-child {
+  border-radius: 4px 0 0 4px;
+}
+
+.mode-btn:last-child {
+  border-radius: 0 4px 4px 0;
+}
+
+.mode-btn:hover {
+  background: #404040;
+}
+
+.mode-btn.active {
+  color: #fff;
+}
+
+.mode-btn.mode-armed.active {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+.mode-btn.mode-home.active {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.mode-btn.mode-disarmed.active {
+  background: #16a34a;
+  border-color: #16a34a;
+}
+
+.mode-btn.mode-test.active {
+  background: #d97706;
+  border-color: #d97706;
+}
+
+/* Inline toggle */
+.toggle-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.toggle-inline input {
+  width: 16px;
+  height: 16px;
+  accent-color: #4f46e5;
+}
