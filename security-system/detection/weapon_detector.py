@@ -55,26 +55,39 @@ def get_weapon_detector(model_type: str = "nano"):
 
 
 class WeaponDetector:
-    """Runs firearm detection on frames using YOLOv8 with improved sensitivity."""
+    """Runs firearm detection on frames - ONLY detect guns and knives in threat positions."""
 
-    def __init__(self, confidence_threshold: float = 0.35):
+    def __init__(self, confidence_threshold: float = 0.70):
         self._conf_threshold = confidence_threshold
         self._model = None
         self._frame_count = 0
 
-        # Weapon-related class names to look for
-        self._weapon_classes = {
+        # ONLY these are valid weapons - no generic "weapon"
+        self._valid_weapons = {
             "gun",
             "pistol",
             "rifle",
             "firearm",
-            "weapon",
-            "knife",
-            "knife_weapon",
-            "gun_weapon",
             "handgun",
             "shotgun",
             "revolver",
+            "knife",
+            "knife_weapon",
+            "gun_weapon",
+        }
+
+        # Other detections to reject
+        self._reject_classes = {
+            "weapon",
+            "cell phone",
+            "remote",
+            "book",
+            "cup",
+            "bottle",
+            "chair",
+            "tv",
+            "laptop",
+            "phone",
         }
 
     def _ensure_model(self):
@@ -105,6 +118,47 @@ class WeaponDetector:
 
         return False
 
+    def _validate_detection(
+        self, class_name: str, box: Tuple, frame_shape: Tuple
+    ) -> bool:
+        """Strict validation - must be gun or knife with correct shape."""
+        class_name = class_name.lower() if class_name else ""
+
+        # Must be a valid weapon
+        if class_name not in self._valid_weapons:
+            return False
+
+        # Check aspect ratio - weapons are narrow
+        x1, y1, x2, y2 = box
+        width = x2 - x1
+        height = y2 - y1
+        if width == 0 or height == 0:
+            return False
+
+        aspect = width / height
+
+        # Guns: narrow (< 0.6), Knives: very narrow (< 0.3)
+        if "knife" in class_name:
+            if aspect > 0.4:
+                return False
+        else:  # gun/rifle/etc
+            if aspect > 0.7:
+                return False
+
+        # Size check - must be reasonable size (0.5% to 15% of frame)
+        area = width * height
+        frame_area = frame_shape[0] * frame_shape[1]
+        ratio = area / frame_area
+        if ratio < 0.005 or ratio > 0.15:
+            return False
+
+        return True
+
+    def _is_weapon_class(self, class_name: str) -> bool:
+        """Check if detected class is a valid weapon."""
+        class_name = class_name.lower() if class_name else ""
+        return class_name in self._valid_weapons
+
     def process(self, frame_bgr) -> Tuple[bool, float, List[Tuple[int, int, int, int]]]:
         """
         Run detection on BGR frame. Returns (weapon_detected, max_confidence, list of boxes).
@@ -126,22 +180,24 @@ class WeaponDetector:
 
         boxes = []
         max_conf = 0.0
+        frame_shape = frame_bgr.shape[:2] if hasattr(frame_bgr, "shape") else (480, 640)
 
         if results.boxes is not None:
             for box in results.boxes:
                 conf = float(box.conf[0])
                 class_id = int(box.cls[0])
-
-                # Check if it's a weapon
                 class_name = self._parse_class_name(class_id, self._model)
 
-                # Accept if confidence is high enough OR if it's a known weapon class
-                if (
-                    conf >= self._conf_threshold * 0.7
-                ):  # Lower threshold for known classes
-                    xyxy = box.xyxy[0].cpu().numpy()
-                    boxes.append(tuple(map(int, xyxy)))
-                    max_conf = max(max_conf, conf)
+                # Get box coordinates
+                xyxy = box.xyxy[0].cpu().numpy()
+                box_coords = tuple(map(int, xyxy))
+
+                # STRICT validation - must pass all checks
+                if not self._validate_detection(class_name, box_coords, frame_shape):
+                    continue
+
+                boxes.append(box_coords)
+                max_conf = max(max_conf, conf)
 
         return len(boxes) > 0, max_conf, boxes
 

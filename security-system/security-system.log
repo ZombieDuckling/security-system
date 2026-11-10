@@ -1,0 +1,13 @@
+/Users/joshsack/security-system/security-system/.venv/lib/python3.14/site-packages/face_recognition_models/__init__.py:7: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import resource_filename
+I0000 00:00:1775558085.826117 2963957 gl_context.cc:407] GL version: 2.1 (2.1 Metal - 90.5), renderer: Apple M4 Pro
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+W0000 00:00:1775558085.829210 2963959 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+W0000 00:00:1775558085.831811 2963959 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+W0000 00:00:1775558085.859451 2963969 landmark_projection_calculator.cc:81] Using NORM_RECT without IMAGE_DIMENSIONS is only supported for the square ROI. Provide IMAGE_DIMENSIONS or use PROJECTION_MATRIX.
+INFO:     Started server process [45644]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ERROR:    [Errno 48] error while attempting to bind on address ('0.0.0.0', 8765): address already in use
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.

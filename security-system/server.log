@@ -1,0 +1,4 @@
+  File "/Users/joshsack/security-system/security-system/main.py", line 68
+    gesture_det = GestureDetector(
+                                 ^
+SyntaxError: '(' was never closed
